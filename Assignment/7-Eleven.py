@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
+def find_shortest_path(G, source, target):
+    shortest_path = nx.shortest_path(G, source=source, target=target, weight='weight')
+    shortest_path_edges = list(zip(shortest_path[:-1], shortest_path[1:]))
+    shortest_path_length = nx.shortest_path_length(G, source=source, target=target, weight='weight')
+    return shortest_path_edges, shortest_path_length
+
 # สร้างกราฟแบบ Undirected Graph
 G = nx.Graph()
 
@@ -23,6 +29,7 @@ G.add_edge('BKS Prachin', 'DunrhiRoad', weight=1)
 G.add_edge('DunrhiRoad', 'Talad TedsabanPrachin', weight=1)
 G.add_edge('BKS Prachin','BanAue', weight=1)
 
+
 # กำหนดตำแหน่งของแต่ละจุด
 pos = nx.spring_layout(G)
 
@@ -32,14 +39,22 @@ nx.draw_networkx_edges(G, pos, width=[G[u][v]['weight']*2 for u, v in G.edges()]
 # วาดจุด
 nx.draw(G, pos, with_labels=True, node_size=1000, node_color='skyblue', font_size=12)
 
-# ทำ Graph Traversal ด้วย Depth-first Search
-dfs_edges = list(nx.dfs_edges(G, source='KMUTNB'))  # เริ่มต้น DFS ที่จุด KMUTNB
-dfs_edges.append((dfs_edges[-1][1], dfs_edges[0][0]))  # เพิ่มเส้นเชื่อมระหว่างจุดสุดท้ายกับจุดเริ่มต้นเพื่อปิดวง
+# รับ input สถานที่ต้นทางและปลายทาง
+source = input("Enter source location: ")
+target = input("Enter target location: ")
+
+# หาเส้นทางที่มีค่า weight น้อยที่สุด
+shortest_path_edges, shortest_path_length = find_shortest_path(G, source, target)
+
+# แสดงผลลัพธ์
+print("Shortest path from {} to {}: ".format(source, target))
+for edge in shortest_path_edges:
+    print("- Pass through:", edge[0], "to", edge[1])
+print("Total distance:", shortest_path_length, "kilometers")
 
 # วาดเส้นทางที่ผ่าน
-for edge in dfs_edges:
-    nx.draw_networkx_edges(G, pos, edgelist=[edge], width=3, edge_color='red')
+nx.draw_networkx_edges(G, pos, edgelist=shortest_path_edges, width=3, edge_color='red')
 
 # แสดงกราฟ
-plt.title("Depth-first Search Traversal")
+plt.title("Shortest Path from {} to {}".format(source, target))
 plt.show()
