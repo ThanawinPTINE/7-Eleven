@@ -21,14 +21,13 @@ G.add_edge('Yag Mhai Khed', 'Talad DongBang', weight=11)
 G.add_edge('WONGWIAN', 'Talad NhongChaAom', weight=7)
 G.add_edge('Talad NhongChaAom', 'PTT NhongChaAom', weight=2)
 G.add_edge('Yag Mhai Khed', 'In front of Jakkaphong', weight= 5)
-G.add_edge('In front of Jakkaphong', 'Prachin Trainstation', weight=1)
-G.add_edge('Prachin Trainstation', 'Mueng Prachin', weight=1)
+G.add_edge('In front of Jakkaphong', 'Prachin Train station', weight=1)
+G.add_edge('Prachin Train station', 'Mueng Prachin', weight=1)
 G.add_edge('Mueng Prachin', 'PTT Prachin', weight=1)
 G.add_edge('PTT Prachin', 'BKS Prachin', weight=1)
 G.add_edge('BKS Prachin', 'DunrhiRoad', weight=1)
 G.add_edge('DunrhiRoad', 'Talad TedsabanPrachin', weight=1)
 G.add_edge('BKS Prachin','BanAue', weight=1)
-
 
 # กำหนดตำแหน่งของแต่ละจุด
 pos = nx.spring_layout(G)
@@ -39,22 +38,40 @@ nx.draw_networkx_edges(G, pos, width=[G[u][v]['weight']*2 for u, v in G.edges()]
 # วาดจุด
 nx.draw(G, pos, with_labels=True, node_size=1000, node_color='skyblue', font_size=12)
 
+my_dict = {1: 'KMUTNB', 2: 'NUENHOM', 3: 'WONGWIAN', 4: 'PTT TALAD', 5: 'PTT DongKheelhenk', 6: 'Talad DongBang', 7: 'Yag Mhai Khed', 8: 'Talad NhongChaAom', 9: 'PTT NhongChaAom', 10: 'In front of Jakkaphong', 11: 'Prachin Train station', 12: 'Mueng Prachin', 13: 'PTT Prachin', 14: 'BKS Prachin', 15: 'DunrhiRoad', 16: 'Talad TedsabanPrachin', 17: 'BanAue'}
+for key, value in my_dict.items():
+    print(key, ":", value)
+
 # รับ input สถานที่ต้นทางและปลายทาง
-source = input("Enter source location: ")
-target = input("Enter target location: ")
+while True:
+    try:
+        source = input("Enter Source location name from above : ")
+        if source not in my_dict.values():
+            raise ValueError("Invalid source location name.")
+        
+        target = input("Enter Target location name from above : ")
+        if target not in my_dict.values():
+            raise ValueError("Invalid target location name.")
 
-# หาเส้นทางที่มีค่า weight น้อยที่สุด
-shortest_path_edges, shortest_path_length = find_shortest_path(G, source, target)
+        # หาเส้นทางที่มีค่า weight น้อยที่สุด
+        shortest_path_edges, shortest_path_length = find_shortest_path(G, source, target)
 
-# แสดงผลลัพธ์
-print("Shortest path from {} to {}: ".format(source, target))
-for edge in shortest_path_edges:
-    print("- Pass through:", edge[0], "to", edge[1])
-print("Total distance:", shortest_path_length, "kilometers")
+        # แสดงผลลัพธ์
+        print("Shortest path from {} to {}: ".format(source, target))
+        for edge in shortest_path_edges:
+            print("- Pass through:", edge[0], "to", edge[1])
+        print("Total distance:", shortest_path_length, "kilometers")
 
-# วาดเส้นทางที่ผ่าน
-nx.draw_networkx_edges(G, pos, edgelist=shortest_path_edges, width=3, edge_color='red')
+        # วาดเส้นทางที่ผ่าน
+        nx.draw_networkx_edges(G, pos, edgelist=shortest_path_edges, width=3, edge_color='red')
 
-# แสดงกราฟ
-plt.title("Shortest Path from {} to {}".format(source, target))
-plt.show()
+        # แสดงกราฟ
+        plt.title("Shortest Path from {} to {}".format(source, target))
+        plt.show()
+
+        break  # ออกจากลูปหลังจากที่ได้รับข้อมูลที่ถูกต้อง
+    except ValueError as e:
+        print("Error:", e)
+    except KeyError:
+        print("Invalid input! Please enter a valid location name.")
+
